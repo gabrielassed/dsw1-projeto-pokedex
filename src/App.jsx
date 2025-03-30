@@ -6,6 +6,7 @@ import {
   Col,
   Container,
   Form,
+  ListGroup,
   Nav,
   Navbar,
   Row,
@@ -13,7 +14,6 @@ import {
 
 async function loadAPI(pokemon) {
   const url = `https://pokeapi.co/api/v2/pokemon/${pokemon}`;
-
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -97,28 +97,77 @@ function App() {
           </Row>
         )}
         {pokemon && !error ? (
-          <Row className="justify-content-center">
-            <Col md={6} lg={4}>
-              <Card className="text-center">
-                <Card.Img
-                  variant="top"
-                  src={pokemon.sprites.front_default}
-                  alt={pokemon.name}
-                  style={{ backgroundColor: '#f2f2f2' }}
-                />
-                <Card.Body>
-                  <Card.Title className="text-capitalize">
-                    {pokemon.name}
-                  </Card.Title>
-                  <Card.Text>
-                    <strong>Nº:</strong> {pokemon.id} <br />
-                    <strong>Peso:</strong> {pokemon.weight / 10}kg <br />
-                    <strong>Altura:</strong> {pokemon.height / 10}m
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
+          <>
+            <Row className="justify-content-center">
+              <Col md={6} lg={4}>
+                <Card className="text-center">
+                  <Card.Img
+                    variant="top"
+                    src={pokemon.sprites.front_default}
+                    alt={pokemon.name}
+                    style={{ backgroundColor: '#f2f2f2' }}
+                  />
+                  <Card.Body>
+                    <Card.Title className="text-capitalize">
+                      {pokemon.name}
+                    </Card.Title>
+                    <Card.Text>
+                      <strong>Nº:</strong> {pokemon.id} <br />
+                      <strong>Peso:</strong> {pokemon.weight / 10}kg <br />
+                      <strong>Altura:</strong> {pokemon.height / 10}m
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+
+            <Row className="justify-content-center">
+              <Col md={8}>
+                <Card className="mt-4">
+                  <Card.Header>Detalhes</Card.Header>
+                  <Card.Body>
+                    <Card.Text>
+                      <strong>Experiência Base:</strong>{' '}
+                      {pokemon.base_experience} <br />
+                      <strong>Habilidades:</strong>{' '}
+                      {pokemon.abilities.map((a) => a.ability.name).join(', ')}{' '}
+                      <br />
+                      <strong>Tipos:</strong>{' '}
+                      {pokemon.types.map((t) => t.type.name).join(', ')}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+
+                <Card className="mt-4">
+                  <Card.Header>Estatísticas</Card.Header>
+                  <ListGroup variant="flush">
+                    {pokemon.stats.map((stat, index) => (
+                      <ListGroup.Item key={index}>
+                        <strong>{stat.stat.name.toUpperCase()}:</strong>{' '}
+                        {stat.base_stat}
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                </Card>
+
+                <Card className="mt-4">
+                  <Card.Header>Movimentos (exibindo 5 primeiros)</Card.Header>
+                  <Card.Body>
+                    <ListGroup>
+                      {pokemon.moves.slice(0, 5).map((move, index) => (
+                        <ListGroup.Item key={index}>
+                          {move.move.name}
+                        </ListGroup.Item>
+                      ))}
+                    </ListGroup>
+                    <small className="text-muted">
+                      Total de movimentos: {pokemon.moves.length}
+                    </small>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </>
         ) : (
           !error && (
             <Row className="justify-content-center">
