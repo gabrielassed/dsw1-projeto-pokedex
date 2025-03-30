@@ -2,6 +2,8 @@
 
 Um aplicativo de Pokédex desenvolvido em React, que utiliza a [PokeAPI](https://pokeapi.co/) para exibir informações detalhadas de Pokémons. O projeto utiliza o React Bootstrap para uma interface moderna, responsiva e amigável.
 
+![Demo GIF](demo.gif)
+
 ## Funcionalidades
 
 - **Busca Dinâmica:** Pesquise Pokémons pelo nome ou número.  
