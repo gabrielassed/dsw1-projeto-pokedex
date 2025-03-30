@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -12,31 +13,54 @@ import {
 
 async function loadAPI(pokemon) {
   const url = `https://pokeapi.co/api/v2/pokemon/${pokemon}`;
+
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Pokémon não encontrado');
+    }
     const data = await response.json();
     console.log(data);
     return data;
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    throw error;
   }
 }
 
 function App() {
   const [pokemon, setPokemon] = useState(null);
   const [search, setSearch] = useState('charizard');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     (async () => {
-      const data = await loadAPI('charizard');
-      setPokemon(data);
+      try {
+        const data = await loadAPI('charizard');
+        setPokemon(data);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+      }
     })();
   }, []);
 
   async function loadPokemon(e) {
     e.preventDefault();
-    const data = await loadAPI(search);
-    setPokemon(data);
+    const cleanedSearch = search.toLowerCase().replace(/\s/g, '');
+    if (!cleanedSearch) {
+      setError('Digite o nome ou número do Pokémon');
+      setPokemon(null);
+      return;
+    }
+    try {
+      const data = await loadAPI(cleanedSearch);
+      setPokemon(data);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+      setPokemon(null);
+    }
   }
 
   return (
@@ -63,7 +87,16 @@ function App() {
         </Container>
       </Navbar>
       <Container className="mt-4">
-        {pokemon ? (
+        {error && (
+          <Row className="justify-content-center">
+            <Col md={6}>
+              <Alert variant="danger" className="text-center">
+                {error}
+              </Alert>
+            </Col>
+          </Row>
+        )}
+        {pokemon && !error ? (
           <Row className="justify-content-center">
             <Col md={6} lg={4}>
               <Card className="text-center">
@@ -87,11 +120,13 @@ function App() {
             </Col>
           </Row>
         ) : (
-          <Row className="justify-content-center">
-            <Col md={6} className="text-center">
-              <p>Carregando...</p>
-            </Col>
-          </Row>
+          !error && (
+            <Row className="justify-content-center">
+              <Col md={6} className="text-center">
+                <p>Carregando...</p>
+              </Col>
+            </Row>
+          )
         )}
       </Container>
     </>
